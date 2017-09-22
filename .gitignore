@@ -2,3 +2,5 @@ bin
 *.pdf
 *.doc
 *.docx
+/* vim swap file */
+*.swp
