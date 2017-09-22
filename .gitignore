@@ -4,4 +4,5 @@ bin
 *.docx
 /* vim swap file */
 *.swp
-test.c
+salesman_management/data
+salesman_management/test.c
