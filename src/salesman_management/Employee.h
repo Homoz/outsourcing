@@ -2,15 +2,16 @@
 #define EMPLOYEE_H
 
 struct Employee {
-  char name[8];
+  char name[16];
   int age;
   bool sex;
-  char education;
+  char education[16];
   double salary;
   char address[128];
   char phoneNumber[16];
+  bool isValid;
 };
 
-const char *toString(const Employee &);
+void printEmployee(const Employee &);
 
 #endif
