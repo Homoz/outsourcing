@@ -4,3 +4,4 @@ bin
 *.docx
 /* vim swap file */
 *.swp
+test.c
