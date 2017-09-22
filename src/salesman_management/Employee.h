@@ -4,14 +4,14 @@
 struct Employee {
   char name[16];
   int age;
-  bool sex;
+  int sex;
   char education[16];
   double salary;
   char address[128];
   char phoneNumber[16];
-  bool isValid;
+  int isValid;
 };
 
-void printEmployee(const Employee &);
+void printEmployee(struct Employee *);
 
 #endif
