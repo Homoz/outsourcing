@@ -6,3 +6,4 @@ bin
 *.swp
 src/salesman_management/data
 src/salesman_management/test.c
+a.out
