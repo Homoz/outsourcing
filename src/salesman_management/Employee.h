@@ -2,6 +2,7 @@
 #define EMPLOYEE_H
 
 struct Employee {
+  int isValid;
   char name[16];
   int age;
   int sex;
@@ -9,7 +10,6 @@ struct Employee {
   double salary;
   char address[128];
   char phoneNumber[16];
-  int isValid;
 };
 
 void printEmployee(struct Employee *);
