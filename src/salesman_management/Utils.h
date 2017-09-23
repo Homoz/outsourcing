@@ -11,7 +11,10 @@ void strToEmployee(const char *, struct Employee **);
 
 // 报错函数
 void logger(char, const char *);
+
 // 记录打印函数
 void printAllValid(struct Archive *);
+// 打印 Employee 信息
+void printEmployee(struct Employee *);
 
 #endif

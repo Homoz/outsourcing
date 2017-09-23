@@ -4,7 +4,7 @@
 #include "Employee.h"
 #include "Utils.h"
 
-const char *RECORD_FORMAT = "%d %s %d %d %s %lf %s %s \n";
+const char *RECORD_FORMAT = "%d %s %d %d %s %lf %s %s\n";
 
 void employeeToStr(char **dest, struct Employee *employee) {
     unsigned int size = 256;
@@ -46,14 +46,38 @@ void printAllValid(struct Archive *arch) {
     // 设置文件读写头到文件开头
     fseek(arch->archiveFile, 0, SEEK_SET);
     char buffer[256];
-    struct Employee *iter = NULL;
+    struct Employee *employee = NULL;
     while (!feof(arch->archiveFile) 
             && fgets(buffer, 255, arch->archiveFile)) {
         
-        strToEmployee(buffer, &iter);
-        if (iter->isValid) { 
-            printf("%s", buffer);
+        strToEmployee(buffer, &employee);
+        if (employee->isValid) { 
+            const char *gender = NULL;
+            if (employee->sex) {
+                gender = "男";
+            } else {
+                gender = "女";
+            }
+            const char *format = "%s %d %s %s %.2lf %s %s\n";
+            printf(format, employee->name, employee->age, gender,
+                    employee->education, employee->salary, 
+                    employee->address, employee->phoneNumber);
+
         }
-        free(iter);
+        free(employee);
     }
+}
+
+void printEmployee(struct Employee *employee) {
+    const char *gender = NULL;
+    if (employee->sex) {
+        gender = "男";
+    } else {
+        gender = "女";
+    }
+    const char *format = "姓名: %s\n年龄: %d\n性别: %s\n"
+        "学历: %s\n薪水: %.2lf\n地址: %s\n电话: %s\n";
+    printf(format, employee->name, employee->age, gender,
+            employee->education, employee->salary, 
+            employee->address, employee->phoneNumber);
 }
