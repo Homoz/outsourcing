@@ -12,6 +12,7 @@ void deleteByName(struct Archive *, const char *);
 void findByName(struct Archive *, const char *, 
         struct Employee **);
 void save(struct Archive *);
+void printAllValid(struct Archive *);
 
 void initArchive(struct Archive *arch, const char *path) {
     arch->MAX_BUFFER_SIZE = 64;
@@ -63,11 +64,31 @@ void findByName(struct Archive *arch, const char *name,
             && fgets(buffer, 255, arch->archiveFile)) {
         
         strToEmployee(buffer, &iter);
-        if (!strcmp(name, iter->name)) { // 匹配到
+        if (iter->isValid && !strcmp(name, iter->name)) { // 匹配到
             *employee = iter;
             return;
         }
         free(iter);
     }
     *employee = NULL; // 未匹配到
+}
+
+void deleteByName(struct Archive *arch, const char *name) {
+
+}
+
+void printAllValid(struct Archive *arch) {
+    // 设置文件读写头到文件开头
+    fseek(arch->archiveFile, 0, SEEK_SET);
+    char buffer[256];
+    struct Employee *iter = NULL;
+    while (!feof(arch->archiveFile) 
+            && fgets(buffer, 255, arch->archiveFile)) {
+        
+        strToEmployee(buffer, &iter);
+        if (iter->isValid) { 
+            printf("%s", buffer);
+        }
+        free(iter);
+    }
 }

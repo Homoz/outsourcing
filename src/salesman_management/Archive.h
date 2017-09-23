@@ -18,5 +18,6 @@ void deleteByName(struct Archive *, const char *);
 void findByName(struct Archive *, const char *, 
         struct Employee **);
 void save(struct Archive *);
+void printAllValid(struct Archive *);
 
 #endif
