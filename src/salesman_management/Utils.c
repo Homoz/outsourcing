@@ -4,27 +4,26 @@
 #include "Employee.h"
 #include "Utils.h"
 
-const char *RECORD_FORMAT = "%s %d %d %s %lf %s %s %d\n";
+const char *RECORD_FORMAT = "%d %s %d %d %s %lf %s %s \n";
 
 void employeeToStr(char **dest, struct Employee *employee) {
     unsigned int size = 256;
     *dest = (char *)malloc(size);
     memset(*dest, 0, size);
-    snprintf(*dest, size, RECORD_FORMAT, 
+    snprintf(*dest, size, RECORD_FORMAT, employee->isValid,
             employee->name, employee->age, employee->sex, 
             employee->education, employee->salary, 
-            employee->address, employee->phoneNumber, 
-            employee->isValid);
+            employee->address, employee->phoneNumber);
 }
 
 void strToEmployee(const char *str, struct Employee **employee) {
     *employee = (struct Employee *)malloc(sizeof(struct Employee));
     memset(*employee, 0, sizeof(struct Employee));
-    sscanf(str, RECORD_FORMAT,
+    sscanf(str, RECORD_FORMAT, &((*employee)->isValid),
             (*employee)->name, &((*employee)->age), 
             &((*employee)->sex), (*employee)->education,
             &((*employee)->salary), (*employee)->address,
-            (*employee)->phoneNumber, &((*employee)->isValid));
+            (*employee)->phoneNumber);
 }
 
 void logger(char type, const char *msg) {
@@ -37,6 +36,7 @@ void logger(char type, const char *msg) {
             break;
         case 'e':
             fprintf(stderr, "error: %s\n", msg);
+            break;
         default:
             fprintf(stderr, "default: %s\n", msg);
     }
