@@ -48,6 +48,7 @@ void add(struct Archive *arch, struct Employee *employee) {
     char *buffer = NULL;
     employeeToStr(&buffer, employee);
     fprintf(arch->archiveFile, "%s", buffer);
+    fflush(arch->archiveFile);
     free(buffer);
 }
 
@@ -87,6 +88,7 @@ int deleteByName(struct Archive *arch, const char *name) {
             fseek(arch->archiveFile, -recodeLength, SEEK_CUR);
             // 设置记录中的是否有效字段为无效
             fprintf(arch->archiveFile, "%d", 0);
+            fflush(arch->archiveFile);
             return 0;
         }
         free(iter);
@@ -102,6 +104,7 @@ int update(struct Archive *arch, struct Employee *employee) {
         return 1;
     } else {
         add(arch, employee);
+        fflush(arch->archiveFile);
         return 0;
     }
 }
