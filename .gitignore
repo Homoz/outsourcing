@@ -4,6 +4,6 @@ bin
 *.docx
 /* vim swap file */
 *.swp
-src/salesman_management/data
-src/salesman_management/test.c
 a.out
+0/src/salesman_management/data/archive.txt
+0/src/salesman_management/test.c
