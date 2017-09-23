@@ -41,3 +41,19 @@ void logger(char type, const char *msg) {
             fprintf(stderr, "default: %s\n", msg);
     }
 }
+
+void printAllValid(struct Archive *arch) {
+    // 设置文件读写头到文件开头
+    fseek(arch->archiveFile, 0, SEEK_SET);
+    char buffer[256];
+    struct Employee *iter = NULL;
+    while (!feof(arch->archiveFile) 
+            && fgets(buffer, 255, arch->archiveFile)) {
+        
+        strToEmployee(buffer, &iter);
+        if (iter->isValid) { 
+            printf("%s", buffer);
+        }
+        free(iter);
+    }
+}

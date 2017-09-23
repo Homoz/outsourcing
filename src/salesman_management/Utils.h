@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include "Employee.h"
+#include "Archive.h"
 
 // 营销员转化为字符串
 void employeeToStr(char **, struct Employee *);
@@ -10,5 +11,7 @@ void strToEmployee(const char *, struct Employee **);
 
 // 报错函数
 void logger(char, const char *);
+// 记录打印函数
+void printAllValid(struct Archive *);
 
 #endif
