@@ -104,7 +104,8 @@ int update(struct Archive *arch, struct Employee *employee) {
         return 1;
     } else {
         add(arch, employee);
-        fflush(arch->archiveFile);
+        /* add function itself will flush */
+        /* fflush(arch->archiveFile); */
         return 0;
     }
 }
