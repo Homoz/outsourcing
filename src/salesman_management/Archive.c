@@ -7,12 +7,10 @@
 void initArchive(struct Archive *, const char *path);
 void finitArchive(struct Archive *);
 void add(struct Archive *, struct Employee *);
-void update(struct Archive *, struct Employee *);
+int update(struct Archive *, struct Employee *);
 int deleteByName(struct Archive *, const char *);
 int findByName(struct Archive *, const char *, 
         struct Employee **);
-void save(struct Archive *);
-void printAllValid(struct Archive *);
 
 void initArchive(struct Archive *arch, const char *path) {
     arch->MAX_BUFFER_SIZE = 64;
@@ -96,18 +94,15 @@ int deleteByName(struct Archive *arch, const char *name) {
     return 1; // 无 name 对应的有效记录, 删除失败
 }
 
-void printAllValid(struct Archive *arch) {
-    // 设置文件读写头到文件开头
-    fseek(arch->archiveFile, 0, SEEK_SET);
-    char buffer[256];
-    struct Employee *iter = NULL;
-    while (!feof(arch->archiveFile) 
-            && fgets(buffer, 255, arch->archiveFile)) {
-        
-        strToEmployee(buffer, &iter);
-        if (iter->isValid) { 
-            printf("%s", buffer);
-        }
-        free(iter);
+
+int update(struct Archive *arch, struct Employee *employee) {
+    int deleted = !deleteByName(arch, employee->name);
+    if (!deleted) {
+        // 不存在以 employee->name 为姓名的有效记录
+        return 1;
+    } else {
+        add(arch, employee);
+        return 0;
     }
 }
+
