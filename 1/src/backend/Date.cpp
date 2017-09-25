@@ -23,8 +23,9 @@ Date::Date(const char *date) {
 }
 
 bool Date::operator <(const Date &rValue) const {
-    return this->year  <= rValue.year && 
-           this->month <  rValue.month;
+    return this->year  < rValue.year || 
+               (this->year == rValue.year &&
+               this->month <  rValue.month);
 }
 
 bool Date::operator ==(const Date &rValue) const {
