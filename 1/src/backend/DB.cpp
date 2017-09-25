@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <algorithm>
 #include "DB.h"
 #include "Log.h"
 #include "Utils.h"
@@ -22,12 +23,12 @@ DB::~DB() {
     sqlite3_close(DB::db);
 }
 
-DB & DB::instance() {
+DB & DB::getInstance() {
     static DB db;
     return db;
 }
 
-void DB::insertOne(const Staff &staff) {
+void DB::insertOne(const Staff &staff) const {
     string comma = ",";
     string apostrophe = "'";
     string nullStr = "";
@@ -55,30 +56,22 @@ void DB::insertOne(const Staff &staff) {
     char *zErrMsg = NULL;
     int rc = sqlite3_exec(DB::db, sql.c_str(), NULL,
             NULL, &zErrMsg);
-    if (rc != SQLITE_OK) {
-        Log::e(string("SQL error: ") + string(zErrMsg));
-        sqlite3_free(zErrMsg);
-    } else {
-        Log::i(string("insert succeed!"));
-    }
+    DB::handleErrorMessageIfAny(rc, zErrMsg,
+            string("add"));
 }
 
-void DB::remove(int id) {
+void DB::remove(int id) const {
     string sql = string("DELETE FROM ") + DB::TABLIE_NAME 
         + string(" where id=") + Utils::to_string(id);
     Log::i(string("sql: ") + sql);
     char *zErrMsg = NULL;
     int rc = sqlite3_exec(DB::db, sql.c_str(), NULL,
             NULL, &zErrMsg);
-    if (rc != SQLITE_OK) {
-        Log::e(string("SQL error: ") + string(zErrMsg));
-        sqlite3_free(zErrMsg);
-    } else {
-        Log::i(string("delete succeed!"));
-    }
+    DB::handleErrorMessageIfAny(rc, zErrMsg,
+            string("delete"));
 }
 
-void DB::update(const Staff &staff) {
+void DB::update(const Staff &staff) const {
     string sql = string("UPDATE ") + DB::TABLIE_NAME
         + string(" set name = '") + staff.getName()
         + string("', gender = '") + staff.getGender()
@@ -97,47 +90,97 @@ void DB::update(const Staff &staff) {
     char *zErrMsg = NULL;
     int rc = sqlite3_exec(DB::db, sql.c_str(), NULL,
             NULL, &zErrMsg);
-    if (rc != SQLITE_OK) {
-        Log::e(string("SQL error: ") + string(zErrMsg));
-        sqlite3_free(zErrMsg);
-    } else {
-        Log::i(string("update succeed!"));
-    }
+    DB::handleErrorMessageIfAny(rc, zErrMsg,
+            string("update"));
 }
 
 static int recordToStaff(void *data, int argc, char **argv,
         char **azColName) {
-    vector<Staff> result = *(vector<Staff> *)data;
+    vector<Staff> *result = (vector<Staff> *)data;
     Staff staff;
     for (int i = 0; i < argc; ++i) {
         staff.set(string(azColName[i]), argv[i]);
     }
-    result.insert(result.end(), staff);
+    result->insert(result->end(), staff);
     return 0;
 }
 
-vector<Staff> DB::findAll(map<string, string> *filter) {
+vector<Staff> DB::fetchAll() const {
     vector<Staff> result;
-    if (!filter) {
-        Log::w(string("empty filter, so nothing filtered"));
-    } else {
-        map<string, string>::iterator iter;
-        for (iter=filter->begin(); iter!=filter->end(); ++iter) {
-        }
-    }
 
     string sql = string("SELECT * FROM ") + DB::TABLIE_NAME;
     Log::i(string("sql: ") + sql);
     char *zErrMsg = NULL;
     int rc = sqlite3_exec(DB::db, sql.c_str(), recordToStaff, 
             (void *)&result, &zErrMsg);
+    DB::handleErrorMessageIfAny(rc, zErrMsg,
+            string("findAll"));
+
+    return result;
+}
+
+void DB::handleErrorMessageIfAny(int rc, char *zErrMsg,
+        string hint) const {
+
     if (rc != SQLITE_OK) {
         Log::e(string("SQL error: ") + string(zErrMsg));
         sqlite3_free(zErrMsg);
     } else {
-        Log::i(string("findAll succeed!"));
+        Log::i(hint + string(" succeed!"));
     }
-    
-    return result;
 }
 
+bool DB::filter(map<string, string> *conditions,
+        const Staff &staff) const {
+
+    map<string, string>::iterator iter;
+    for (iter = conditions->begin(); iter != conditions->end();
+            ++iter) {
+
+        string key = iter->first;
+        string value = iter->second;
+
+        if (key == "department") {
+            if (value != Utils::to_string(staff.department))
+                return false;
+        } else if (key == "title"){
+            if (value != staff.getTitle())
+                return false;
+        } else if (key == "birthDay+") {
+            // Date 按年月字面值比较
+            if (Date(value.c_str()) >= staff.birthDay)
+                return false;
+        } else if (key == "birthDay-") {
+            if (Date(value.c_str()) <= staff.birthDay)
+                return false;
+        } else if (key == "isMarried") {
+            bool isMarried = (atoi(value.c_str()) != 0);
+            if (isMarried != staff.isMarried)
+                return false;
+        } else {
+            Log::e(string("invalid key used to filter"));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// 先查询数据库, 再过滤, 性能问题
+vector<Staff> DB::findAllSatisfies(
+        map<string, string> *conditions) const {
+
+    vector<Staff> allStaff = fetchAll();
+    if (!conditions || conditions->empty())
+        return allStaff;
+
+    vector<Staff> result;
+
+    for (unsigned long i = 0; i < allStaff.size(); ++i) {
+        if (this->filter(conditions, allStaff[i])) {
+            result.push_back(allStaff[i]);
+        }
+    }
+
+    return result;
+}
