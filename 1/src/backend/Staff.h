@@ -26,6 +26,7 @@ class Staff {
               Date birthDay=Date(1970,1), string title="",
             string education="", double salary=0.0,
             bool isMarried=false);
+        Staff(const Staff &staff);
 
         string toString() const;
 

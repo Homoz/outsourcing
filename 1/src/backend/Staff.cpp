@@ -21,6 +21,20 @@ Staff::Staff(int id, string name, string gender, int type,
     this->isMarried = isMarried;
 }
 
+Staff::Staff(const Staff &staff) 
+    : birthDay(staff.birthDay)
+{
+    this->id = staff.id;
+    this->name = staff.name;
+    this->gender = staff.gender;
+    this->type = staff.type;
+    this->department = staff.department;
+    this->title = staff.title;
+    this->education = staff.education;
+    this->salary = staff.salary;
+    this->isMarried = staff.isMarried;
+}
+
 void Staff::set(string attrName, const char *attrValue) {
     if (attrName == "id") {
         this->id = atoi(attrValue);
