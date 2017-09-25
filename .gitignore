@@ -10,3 +10,5 @@ records
 0/src/salesman_management/test.c
 1/doc
 1/src/backend/test.cpp
+1/src/backend/StaffInfo.db
+1/src/backend/sql
